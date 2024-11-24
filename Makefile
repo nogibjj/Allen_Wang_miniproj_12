@@ -1,14 +1,44 @@
-install: 
-	pip install --upgrade pip && pip install -r requirements.txt 
+# Application-specific variables
+APP_NAME = databricks-file-pipeline
+DOCKER_USER = 31good
+DOCKER_TAG = $(DOCKER_USER)/$(APP_NAME):latest
 
-format: 
-	black *.py
+# Default make targets
+all: install format lint test
 
+# Install dependencies
+install:
+	pip install --upgrade pip && pip install -r requirements.txt
+
+# Format Python files
+format:
+	black *.py mylib/*.py
+
+# Lint codebase
 lint:
-	#pylint --disable=R,C --ignore-patterns=test_.*?py $(wildcard *.py)
 	ruff check *.py mylib/*.py
 
-test: 
-	python -m pytest -cov=main test_main.py
+# Run tests with coverage
+test:
+	python -m pytest --cov=main test_main.py
 
-all: install format lint test
+# Build Docker image
+build:
+	docker build -t $(APP_NAME) .
+
+# Run Docker container
+run:
+	docker run -p 5000:5000 --env-file .env $(APP_NAME)
+
+# Tag Docker image
+tag:
+	docker tag $(APP_NAME) $(DOCKER_TAG)
+
+# Push Docker image to Docker Hub
+push: tag
+	docker push $(DOCKER_TAG)
+
+# Clean up Docker resources
+clean:
+	docker rmi -f $(APP_NAME) $(DOCKER_TAG)
+	docker rm -f $(APP_NAME)-container || true
