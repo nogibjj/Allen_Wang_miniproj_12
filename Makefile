@@ -24,11 +24,11 @@ test:
 
 # Build Docker image
 build:
-	docker build -t $(APP_NAME) .
+	docker build -t $(DOCKER_TAG) .
 
 # Run Docker container
 run:
-	docker run -p 5000:5000 --env-file .env $(APP_NAME)
+	docker run -p 5000:5000 $(DOCKER_TAG)
 
 # Tag Docker image
 tag:

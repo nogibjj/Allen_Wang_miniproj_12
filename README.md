@@ -1,18 +1,32 @@
-# Allen_Wang_miniproj_11
+# Allen_Wang_miniproj_12
 
-[![CI](https://github.com/nogibjj/Allen_Wang_miniproj_11/actions/workflows/CICD.yml/badge.svg)](https://github.com/nogibjj/Allen_Wang_miniproj_11/actions/workflows/CICD.yml)
+[![CI](https://github.com/nogibjj/Allen_Wang_miniproj_12/actions/workflows/CICD.yml/badge.svg)](https://github.com/nogibjj/Allen_Wang_miniproj_12/actions/workflows/CICD.yml)
 
 ## Overview
 
-This project demonstrates a complete data pipeline using Databricks, showcasing how to extract data from an external url, transform it with SQL and Python, and load it into a structured format for analysis. The project includes a CI/CD setup for ensuring code quality, reproducibility, and testing. The pipeline identifies trends in alcohol consumption and drug use across different countries and age groups, with a focus on actionable insights from complex SQL queries.
+This project demonstrates a simple Python application containerized with Docker. The application includes two primary functionalities:
+1. Checking file status on Databricks.
+2. Displaying a pre-generated image from a specified path.
+
+Additionally, the project includes a CI/CD pipeline configured using GitHub Actions to:
+- Build the Docker image.
+- Push the Docker image to Docker Hub.
+
+This showcases both local application execution in a Docker container and an automated deployment pipeline.
+
 
 ## Pipeline Overview
 
-### Data Pipeline Components:
-- **Data Source**: [`drinks`](https://raw.githubusercontent.com/fivethirtyeight/data/master/alcohol-consumption/drinks.csv) and [`drug use`](https://raw.githubusercontent.com/fivethirtyeight/data/master/drug-use-by-age/drug-use-by-age.csv) tables.
-- **Data Sink**: Transformed data is stored in Delta tables on Databricks.
-- **Transformation**: Fill in na and new features created
-- **Visualization**: Analysis results are visualized using Python's Matplotlib and Seaborn.
+### Features:
+1. **Data Source**: Demonstrates functionality with example data files and APIs.
+2. **CI/CD Pipeline**: Automates testing, linting, building, and Docker image deployment to Docker Hub.
+3. **Application**: Provides APIs for file checking and image display.
+
+### Application Endpoints:
+- **`GET /check-file`**: Checks the status of a file on Databricks.
+  - Example query: `http://127.0.0.1:5000/check-file?file_path=/path/to/file`
+- **`GET /display-image`**: Displays an image stored locally or in a specific workspace.
+  - Example query: `http://127.0.0.1:5000/display-image1` `http://127.0.0.1:5000/display-image2`
 
 ### Pipeline Steps:
 1. Extract data from url.
@@ -24,56 +38,90 @@ This project demonstrates a complete data pipeline using Databricks, showcasing 
 
 ## Project Structure
 
-- **`mylib/`**: Python scripts for SQL queries, data extraction, and transformations.
-- **`.devcontainer/`**: Configuration for the development container.
-- **Makefile**: Provides commands for setup, formatting, linting, testing, and running SQL queries:
+- **`mylib/`**: Python scripts for functionality (e.g., querying Databricks, loading images).
+- **`Dockerfile`**: Instructions for containerizing the application.
+- **`Makefile`**: Commands for setup, testing, and Docker operations:
   - `make install`: Installs dependencies.
   - `make format`: Formats Python files.
   - `make lint`: Lints Python files.
   - `make test`: Runs unit tests.
-  - `make all`: Runs all tasks (install, format, lint, and test).
-- **`.github/workflows/CICD.yml`**: CI/CD pipeline configuration using GitHub Actions.
+  - `make build`: Builds the Docker image locally.
+  - `make run`: Runs the Docker container locally.
+  - `make push`: Tags and pushes the Docker image to Docker Hub.
+- **`.github/workflows/CICD.yml`**: GitHub Actions configuration for CI/CD.
 - **`README.md`**: Setup instructions, usage guidelines, and project description.
-
 
 ## Setup
 
 1. **Clone the repository**:
 
     ```bash
-    git clone https://github.com/nogibjj/Allen_Wang_miniproj_11.git
-    cd Allen_Wang_miniproj_11
+    git clone https://github.com/nogibjj/Allen_Wang_miniproj_12.git
+    cd Allen_Wang_miniproj_12
     ```
 
 2. **Install dependencies**:
-
     ```bash
     make install
     ```
 
-3. **Format code**:
-
+3. **Run the application**:
     ```bash
-    make format
+    python app.py
     ```
 
-4. **Lint code**:
+4. **Access the application**:
+   - Visit `http://127.0.0.1:5000/` for the homepage.
+   - Use the described endpoints for additional functionalities.
 
+
+### Dockerized Setup
+
+1. **Build the Docker image**:
     ```bash
-    make lint
+    docker build -t 31good/databricks-file-pipeline:latest .
     ```
 
-5. **Test code**:
-
+2. **Run the Docker container**:
     ```bash
-    make test
+    docker run -p 5000:5000 31good/databricks-file-pipeline:latest
     ```
 
-## Visualization from Query
+3. **Access the application**:
+   - Visit `http://127.0.0.1:5000/`.
 
-![viz1](alcohol_servings_by_type.png)
-![viz2](alcohol_servings_by_type.png)
+## Usage Instructions
 
-## Databricks Pipeline
+### File Status Check
+Send a GET request to check the file status:
+```bash
+curl "http://127.0.0.1:5000/check-file?file_path=/path/to/file"
+```
 
-![pipeline](Pipeline.png)
+### Image Display
+Access the image display endpoint:
+```bash
+curl "http://127.0.0.1:5000/display-image"
+```
+
+## Visualization Examples
+
+### Alcohol Consumption by Type
+![viz1](web_2.png)
+
+### Top 10 countries alcohol consumption
+![pipeline](web_1.png)
+
+---
+
+## Docker Hub Repository
+
+The Docker image is hosted at:
+[31good/databricks-file-pipeline](https://hub.docker.com/r/31good/databricks-file-pipeline)
+
+To pull the image:
+```bash
+docker pull 31good/databricks-file-pipeline:latest
+```
+
+![docker](docker.png)
